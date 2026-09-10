@@ -55,17 +55,31 @@ if (isset($_POST['login_submit'])) {
     $email    = trim($_POST['login_email'] ?? '');
     $password = $_POST['login_password'] ?? '';
 
-    $stmt = $conn->prepare("SELECT id, fullname, password, role FROM users WHERE email = ?");
+    // Validation for empty inputs
+    if (empty($email) || empty($password)) {
+        $_SESSION['alert'] = "Swal.fire({icon: 'warning', title: 'Empty Fields', text: 'Please enter both email and password.', confirmButtonColor: '#47663B'});";
+        header("Location: ../../login.php");
+        exit();
+    }
+
+    // FIX: email aur created_at ko SELECT query me add kiya gaya hai
+    $stmt = $conn->prepare("SELECT id, fullname, email, password, role, created_at FROM users WHERE email = ? LIMIT 1");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($user = $result->fetch_assoc()) {
         if (password_verify($password, $user['password'])) {
-            $_SESSION['user_id']   = $user['id'];
-            $_SESSION['user_name'] = $user['fullname'];
-            $_SESSION['user_role'] = $user['role'];
+            // Save all fields into session
+            $_SESSION['user_id']         = $user['id'];
+            $_SESSION['user_name']       = $user['fullname'];
+            $_SESSION['user_email']      = $user['email'];
+            $_SESSION['user_role']       = $user['role'];
+            $_SESSION['user_created_at'] = $user['created_at'];
 
+            $stmt->close();
+
+            // Role-based Redirection
             if ($user['role'] === 'admin') {
                 header("Location: ../../admin/index.php");
             } elseif ($user['role'] === 'seller') {
@@ -80,8 +94,8 @@ if (isset($_POST['login_submit'])) {
     } else {
         $_SESSION['alert'] = "Swal.fire({icon: 'error', title: 'Not Found', text: 'No account registered with this email address.', confirmButtonColor: '#47663B'});";
     }
-    $stmt->close();
 
+    $stmt->close();
     header("Location: ../../login.php");
     exit();
 }
