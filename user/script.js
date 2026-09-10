@@ -1,941 +1,460 @@
-/* =========================================================
-   ECOCRAFTS JAVASCRIPT
-========================================================= */
-
-
-/* =========================================================
-   SECTION NAVIGATION
-========================================================= */
-
-const menuItems = document.querySelectorAll(".menu-item[data-section]");
-
-const sections = document.querySelectorAll(".page-section");
-
-
-function showSection(sectionId) {
-
-    /* Hide every section */
-
-    sections.forEach(function (section) {
-
-        section.style.display = "none";
-
-    });
-
-
-    /* Show selected section */
-
-    const selectedSection = document.getElementById(sectionId);
-
-    if (selectedSection) {
-
-        selectedSection.style.display = "block";
-
-    }
-
-
-    /* Update active menu */
-
-    menuItems.forEach(function (item) {
-
-        item.classList.remove("active");
-
-    });
-
-
-    const activeMenu = document.querySelector(
-        `.menu-item[data-section="${sectionId}"]`
-    );
-
-    if (activeMenu) {
-
-        activeMenu.classList.add("active");
-
-    }
-
-
-    /* Scroll to top */
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-
-}
-
-
-/* =========================================================
-   SIDEBAR MENU CLICK
-========================================================= */
-
-menuItems.forEach(function (item) {
-
-    item.addEventListener("click", function (event) {
-
-        event.preventDefault();
-
-        const section = item.getAttribute("data-section");
-
-        showSection(section);
-
-    });
-
-});
-
-
-/* =========================================================
-   OTHER DATA-SECTION LINKS
-========================================================= */
-
-const sectionLinks = document.querySelectorAll(
-    "[data-section]:not(.menu-item)"
-);
-
-sectionLinks.forEach(function (link) {
-
-    link.addEventListener("click", function (event) {
-
-        event.preventDefault();
-
-        const section = link.getAttribute("data-section");
-
-        showSection(section);
-
-    });
-
-});
-
-
-/* =========================================================
-   SHOP NOW BUTTON
-========================================================= */
-
-const shopNowButton = document.querySelector(".shop-now");
-
-if (shopNowButton) {
-
-    shopNowButton.addEventListener("click", function () {
-
-        showSection("shop");
-
-    });
-
-}
-
-
-/* =========================================================
-   CART
-========================================================= */
-
-let cartCount = 2;
-
-const cartCountElement = document.getElementById("cartCount");
-
-const cartButton = document.getElementById("cartBtn");
-
-
-function updateCartCount() {
-
-    if (cartCountElement) {
-
-        cartCountElement.textContent = cartCount;
-
-    }
-
-}
-
-
-/* ADD TO CART BUTTONS */
-
-const addCartButtons = document.querySelectorAll(
-    ".add-cart, .add-shop-cart"
-);
-
-addCartButtons.forEach(function (button) {
-
-    button.addEventListener("click", function () {
-
-        cartCount++;
-
-        updateCartCount();
-
-
-        /* Button feedback */
-
-        const oldText = button.innerHTML;
-
-        button.innerHTML =
-            '<i class="fa-solid fa-check"></i> Added';
-
-        button.style.background = "#557b4b";
-        button.style.color = "#ffffff";
-
-
-        setTimeout(function () {
-
-            button.innerHTML = oldText;
-
-            button.style.background = "";
-            button.style.color = "";
-
-        }, 1200);
-
-    });
-
-});
-
-
-/* CART BUTTON */
-
-if (cartButton) {
-
-    cartButton.addEventListener("click", function () {
-
-        alert(
-            "🛒 Your Cart\n\n" +
-            "You currently have " +
-            cartCount +
-            " item(s) in your cart."
-        );
-
-    });
-
-}
-
-
-/* =========================================================
-   WISHLIST
-========================================================= */
-
-const heartButtons = document.querySelectorAll(".heart");
-
-heartButtons.forEach(function (button) {
-
-    button.addEventListener("click", function () {
-
-        const icon = button.querySelector("i");
-
-        button.classList.toggle("liked");
-
-
-        if (button.classList.contains("liked")) {
-
-            icon.classList.remove("fa-regular");
-
-            icon.classList.add("fa-solid");
-
-        } else {
-
-            icon.classList.remove("fa-solid");
-
-            icon.classList.add("fa-regular");
-
+document.addEventListener("DOMContentLoaded", function () {
+    // ==========================================
+    // 1. NAVIGATION TAB SWITCHING
+    // ==========================================
+    const menuLinks = document.querySelectorAll(".menu .menu-item");
+    const sections = document.querySelectorAll(".page-section");
+    const sidebar = document.getElementById("sidebar");
+    const sidebarOverlay = document.getElementById("sidebarOverlay");
+    const mobileToggleBtn = document.getElementById("mobileToggleBtn");
+
+    function navigateTo(targetId) {
+        if (!targetId) return;
+
+        const targetSection = document.getElementById(targetId);
+        if (!targetSection) return;
+
+        // Hide all sections & remove active class from sidebar
+        sections.forEach(s => s.classList.add("hidden-section"));
+        menuLinks.forEach(m => m.classList.remove("active"));
+
+        // Show targeted section
+        targetSection.classList.remove("hidden-section");
+
+        // Highlight sidebar nav item
+        const activeMenuItem = document.querySelector(`.menu-item[data-section="${targetId}"]`);
+        if (activeMenuItem) {
+            activeMenuItem.classList.add("active");
         }
 
-    });
-
-});
-
-
-/* =========================================================
-   REMOVE WISHLIST ITEM
-========================================================= */
-
-const removeWishlistButtons =
-    document.querySelectorAll(".remove-wishlist");
-
-
-removeWishlistButtons.forEach(function (button) {
-
-    button.addEventListener("click", function () {
-
-        const product = button.closest(".shop-product");
-
-        if (product) {
-
-            product.style.transform = "scale(0.9)";
-            product.style.opacity = "0";
-
-
-            setTimeout(function () {
-
-                product.remove();
-
-            }, 300);
-
+        // Close sidebar in mobile view
+        if (sidebar && sidebar.classList.contains("open")) {
+            sidebar.classList.remove("open");
+            if (sidebarOverlay) sidebarOverlay.classList.remove("open");
         }
 
-    });
-
-});
-
-
-/* =========================================================
-   TOP WISHLIST BUTTON
-========================================================= */
-
-const wishlistTop =
-    document.getElementById("wishlistTop");
-
-
-if (wishlistTop) {
-
-    wishlistTop.addEventListener("click", function () {
-
-        showSection("wishlist");
-
-    });
-
-}
-
-
-/* =========================================================
-   PROFILE BUTTONS
-========================================================= */
-
-const profileButtons =
-    document.querySelectorAll(".profile-btn");
-
-
-profileButtons.forEach(function (button) {
-
-    button.addEventListener("click", function () {
-
-        showSection("profile");
-
-    });
-
-});
-
-
-/* =========================================================
-   SEARCH
-========================================================= */
-
-const searchInput =
-    document.getElementById("searchInput");
-
-const searchButton =
-    document.getElementById("searchBtn");
-
-
-function performSearch() {
-
-    const searchValue =
-        searchInput.value.trim().toLowerCase();
-
-
-    if (searchValue === "") {
-
-        alert("Please enter a product name.");
-
-        return;
-
+        window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-
-    showSection("shop");
-
-
-    const products =
-        document.querySelectorAll(".shop-product");
-
-
-    let found = false;
-
-
-    products.forEach(function (product) {
-
-        const productName =
-            product.querySelector("h3");
-
-
-        if (!productName) return;
-
-
-        const name =
-            productName.textContent.toLowerCase();
-
-
-        if (name.includes(searchValue)) {
-
-            product.style.display = "block";
-
-            product.style.outline =
-                "2px solid #557b4b";
-
-            found = true;
-
-        } else {
-
-            product.style.display = "none";
-
-        }
-
-    });
-
-
-    if (!found) {
-
-        alert(
-            "No product found for: " +
-            searchValue
-        );
-
-
-        products.forEach(function (product) {
-
-            product.style.display = "block";
-
-            product.style.outline = "none";
-
+    // Sidebar items click
+    menuLinks.forEach(link => {
+        link.addEventListener("click", function (e) {
+            if (this.id === "logoutBtn") return;
+            e.preventDefault();
+            const target = this.getAttribute("data-section");
+            navigateTo(target);
         });
-
-    }
-
-}
-
-
-/* SEARCH BUTTON */
-
-if (searchButton) {
-
-    searchButton.addEventListener(
-        "click",
-        performSearch
-    );
-
-}
-
-
-/* ENTER KEY SEARCH */
-
-if (searchInput) {
-
-    searchInput.addEventListener(
-        "keydown",
-        function (event) {
-
-            if (event.key === "Enter") {
-
-                performSearch();
-
-            }
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   MESSAGE SYSTEM
-========================================================= */
-
-const messageInput =
-    document.getElementById("messageInput");
-
-const sendMessage =
-    document.getElementById("sendMessage");
-
-const chatBody =
-    document.querySelector(".chat-body");
-
-
-function sendNewMessage() {
-
-    if (!messageInput || !chatBody) return;
-
-
-    const messageText =
-        messageInput.value.trim();
-
-
-    if (messageText === "") {
-
-        return;
-
-    }
-
-
-    /* Create message */
-
-    const message =
-        document.createElement("div");
-
-
-    message.classList.add(
-        "message",
-        "sent"
-    );
-
-
-    message.textContent =
-        messageText;
-
-
-    chatBody.appendChild(message);
-
-
-    /* Clear input */
-
-    messageInput.value = "";
-
-
-    /* Scroll chat */
-
-    chatBody.scrollTop =
-        chatBody.scrollHeight;
-
-
-    /* Fake support reply */
-
-    setTimeout(function () {
-
-        const reply =
-            document.createElement("div");
-
-
-        reply.classList.add(
-            "message",
-            "received"
-        );
-
-
-        reply.textContent =
-            "Thank you for your message! Our support team will help you shortly. 😊";
-
-
-        chatBody.appendChild(reply);
-
-
-        chatBody.scrollTop =
-            chatBody.scrollHeight;
-
-    }, 900);
-
-}
-
-
-/* SEND BUTTON */
-
-if (sendMessage) {
-
-    sendMessage.addEventListener(
-        "click",
-        sendNewMessage
-    );
-
-}
-
-
-/* ENTER TO SEND */
-
-if (messageInput) {
-
-    messageInput.addEventListener(
-        "keydown",
-        function (event) {
-
-            if (event.key === "Enter") {
-
-                sendNewMessage();
-
-            }
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   CHAT LIST
-========================================================= */
-
-const chats =
-    document.querySelectorAll(".chat");
-
-
-chats.forEach(function (chat) {
-
-    chat.addEventListener("click", function () {
-
-        chats.forEach(function (item) {
-
-            item.classList.remove(
-                "active-chat"
-            );
-
-        });
-
-
-        chat.classList.add(
-            "active-chat"
-        );
-
     });
 
-});
+    // Elements with data-section (buttons, cards, links)
+    document.querySelectorAll("[data-section]").forEach(el => {
+        el.addEventListener("click", function (e) {
+            if (this.classList.contains("menu-item")) return;
+            e.preventDefault();
+            const target = this.getAttribute("data-section");
+            navigateTo(target);
+        });
+    });
 
+    // Mobile sidebar toggle
+    if (mobileToggleBtn) {
+        mobileToggleBtn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            sidebar.classList.toggle("open");
+            if (sidebarOverlay) sidebarOverlay.classList.toggle("open");
+        });
+    }
 
-/* =========================================================
-   DARK MODE
-========================================================= */
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener("click", function () {
+            sidebar.classList.remove("open");
+            sidebarOverlay.classList.remove("open");
+        });
+    }
 
-const darkMode =
-    document.getElementById("darkMode");
+    // ==========================================
+    // 2. SWEETALERT2 LOGOUT HANDLER (COMPACT SCALE)
+    // ==========================================
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
 
-
-if (darkMode) {
-
-    darkMode.addEventListener(
-        "change",
-        function () {
-
-            if (darkMode.checked) {
-
-                document.body.classList.add(
-                    "dark-mode"
-                );
-
-                localStorage.setItem(
-                    "ecoCraftsDarkMode",
-                    "true"
-                );
-
+            if (typeof Swal !== "undefined") {
+                Swal.fire({
+                    title: "Ready to leave?",
+                    text: "You will be signed out of your account.",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#5a9c41",
+                    cancelButtonColor: "#da4332",
+                    confirmButtonText: "Yes, Logout",
+                    cancelButtonText: "Cancel",
+                    reverseButtons: true,
+                    customClass: {
+                        popup: 'swal-compact-popup'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "../logout.php";
+                    }
+                });
             } else {
-
-                document.body.classList.remove(
-                    "dark-mode"
-                );
-
-                localStorage.setItem(
-                    "ecoCraftsDarkMode",
-                    "false"
-                );
-
+                if (confirm("Are you sure you want to log out?")) {
+                    window.location.href = "../logout.php";
+                }
             }
-
-        }
-    );
-
-}
-
-
-/* LOAD DARK MODE */
-
-const savedDarkMode =
-    localStorage.getItem(
-        "ecoCraftsDarkMode"
-    );
-
-
-if (savedDarkMode === "true") {
-
-    document.body.classList.add(
-        "dark-mode"
-    );
-
-
-    if (darkMode) {
-
-        darkMode.checked = true;
-
+        });
     }
 
-}
+    // ==========================================
+    // 3. NOTIFICATION DROPDOWN TOGGLE
+    // ==========================================
+    const notifBtn = document.getElementById("notifBtn");
+    const notifDropdown = document.getElementById("notifDropdown");
+    const markAllRead = document.getElementById("markAllRead");
+    const notifDot = document.getElementById("notifDot");
 
+    if (notifBtn && notifDropdown) {
+        notifBtn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            notifDropdown.classList.toggle("show");
+        });
 
-/* =========================================================
-   LOGOUT
-========================================================= */
+        // Close when clicked outside
+        document.addEventListener("click", function (e) {
+            if (!notifDropdown.contains(e.target) && !notifBtn.contains(e.target)) {
+                notifDropdown.classList.remove("show");
+            }
+        });
 
-const logoutBtn =
-    document.getElementById("logoutBtn");
+        if (markAllRead) {
+            markAllRead.addEventListener("click", function () {
+                document.querySelectorAll(".notif-item.unread").forEach(item => {
+                    item.classList.remove("unread");
+                });
+                if (notifDot) notifDot.style.display = "none";
+            });
+        }
+    }
 
+    // ==========================================
+    // 4. CART SLIDE DRAWER
+    // ==========================================
+    const cartToggleBtn = document.getElementById("cartToggleBtn");
+    const cartDrawer = document.getElementById("cartDrawer");
+    const cartDrawerOverlay = document.getElementById("cartDrawerOverlay");
+    const cartCloseBtn = document.getElementById("cartCloseBtn");
+    const checkoutBtn = document.getElementById("checkoutBtn");
 
-if (logoutBtn) {
+    function openCart() {
+        if (cartDrawer) cartDrawer.classList.add("open");
+        if (cartDrawerOverlay) cartDrawerOverlay.classList.add("open");
+    }
 
-    logoutBtn.addEventListener(
-        "click",
-        function (event) {
+    function closeCart() {
+        if (cartDrawer) cartDrawer.classList.remove("open");
+        if (cartDrawerOverlay) cartDrawerOverlay.classList.remove("open");
+    }
 
-            event.preventDefault();
+    if (cartToggleBtn) cartToggleBtn.addEventListener("click", openCart);
+    if (cartCloseBtn) cartCloseBtn.addEventListener("click", closeCart);
+    if (cartDrawerOverlay) cartDrawerOverlay.addEventListener("click", closeCart);
 
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener("click", function () {
+            if (typeof Swal !== "undefined") {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Cart is Empty',
+                    text: 'Explore our catalog to add handcrafted items before checkout!',
+                    confirmButtonColor: '#47663B'
+                });
+            } else {
+                alert("Your cart is empty!");
+            }
+        });
+    }
 
-            const confirmLogout =
-                confirm(
-                    "Are you sure you want to logout?"
-                );
+// ==========================================
+// 1. PROFILE EDIT & SAVE WORKFLOW
+// ==========================================
+const profileActionBtn = document.getElementById("profileActionBtn");
+const nameInput = document.getElementById("profileNameInput");
+const emailInput = document.getElementById("profileEmailInput");
+const userIdInput = document.getElementById("profileUserId");
+const displayProfileName = document.getElementById("displayProfileName");
+const avatarLetter = document.getElementById("profileAvatarLetter");
 
+let isEditing = false;
 
-            if (confirmLogout) {
+if (profileActionBtn) {
+    profileActionBtn.addEventListener("click", async function () {
+        if (!isEditing) {
+            isEditing = true;
+            nameInput.disabled = false;
+            emailInput.disabled = false;
+            nameInput.classList.add("editable-active");
+            emailInput.classList.add("editable-active");
+            nameInput.focus();
 
-                alert(
-                    "You have been logged out successfully! 👋"
-                );
+            profileActionBtn.innerHTML = `<i class="fa-solid fa-check"></i> <span id="profileBtnText">Save Changes</span>`;
+        } else {
+            const newName = nameInput.value.trim();
+            const newEmail = emailInput.value.trim();
+            const userId = userIdInput.value.trim();
 
+            if (newName === "" || newEmail === "") {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Incomplete Fields',
+                    text: 'Full Name and Email Address cannot be blank.',
+                    confirmButtonColor: '#47663B'
+                });
+                return;
             }
 
-        }
-    );
+            const confirmResult = await Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you want to update your profile details?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#47663B',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, update it!',
+                cancelButtonText: 'Cancel'
+            });
 
-}
+            if (!confirmResult.isConfirmed) return;
 
+            try {
+                const response = await fetch('../api/user/update_profile.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: userId, fullname: newName, email: newEmail })
+                });
 
-/* =========================================================
-   NOTIFICATION
-========================================================= */
+                const data = await response.json();
 
-const notificationButton =
-    document.querySelector(
-        ".notification-btn"
-    );
-
-
-if (notificationButton) {
-
-    notificationButton.addEventListener(
-        "click",
-        function () {
-
-            alert(
-                "🔔 Notifications\n\n" +
-                "• Your order has been shipped.\n" +
-                "• New eco-friendly products are available.\n" +
-                "• Special discount available today!"
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   TRACK ALL ORDERS
-========================================================= */
-
-const trackOrders =
-    document.querySelector(".track-orders");
-
-
-if (trackOrders) {
-
-    trackOrders.addEventListener(
-        "click",
-        function () {
-
-            showSection("orders");
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   ADDRESS BUTTONS
-========================================================= */
-
-const addressButtons =
-    document.querySelectorAll(
-        ".address-actions button"
-    );
-
-
-addressButtons.forEach(function (button) {
-
-    button.addEventListener(
-        "click",
-        function () {
-
-            const action =
-                button.textContent.trim();
-
-
-            if (action === "Delete") {
-
-                const card =
-                    button.closest(
-                        ".address-card"
-                    );
-
-
-                const confirmDelete =
-                    confirm(
-                        "Do you want to delete this address?"
-                    );
-
-
-                if (confirmDelete && card) {
-
-                    card.remove();
-
+                if (data.status === 'error') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Update Failed',
+                        text: data.message,
+                        confirmButtonColor: '#47663B'
+                    });
+                    return;
                 }
 
-            } else {
+                isEditing = false;
+                nameInput.disabled = true;
+                emailInput.disabled = true;
+                nameInput.classList.remove("editable-active");
+                emailInput.classList.remove("editable-active");
 
-                alert(
-                    "Address editing option is ready for integration."
-                );
+                if (displayProfileName) displayProfileName.innerText = newName;
+                if (avatarLetter) avatarLetter.innerText = newName.charAt(0).toUpperCase();
 
+                profileActionBtn.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> <span id="profileBtnText">Edit Profile</span>`;
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Profile Updated',
+                    text: data.message,
+                    confirmButtonColor: '#47663B',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+
+            } catch (err) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Server Error',
+                    text: 'Failed to connect to the server. Please try again.',
+                    confirmButtonColor: '#47663B'
+                });
             }
-
         }
-    );
-
-});
-
-
-/* =========================================================
-   HELP BUTTONS
-========================================================= */
-
-const helpButtons =
-    document.querySelectorAll(
-        ".help-card button"
-    );
-
-
-helpButtons.forEach(function (button) {
-
-    button.addEventListener(
-        "click",
-        function () {
-
-            alert(
-                "Our support team is here to help you! 😊"
-            );
-
-        }
-    );
-
-});
-
-
-/* =========================================================
-   SLIDER
-========================================================= */
-
-const dots =
-    document.querySelectorAll(".dot");
-
-
-let currentSlide = 0;
-
-
-const heroImages = [
-
-    "https://images.unsplash.com/photo-1603204077779-bed963ea7d0e?w=1200",
-
-    "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1200",
-
-    "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=1200",
-
-    "https://images.unsplash.com/photo-1594223274512-ad4803739b7c?w=1200"
-
-];
-
-
-const heroImage =
-    document.querySelector(
-        ".hero-image img"
-    );
-
-
-function changeSlide(index) {
-
-    currentSlide = index;
-
-
-    if (heroImage) {
-
-        heroImage.src =
-            heroImages[index];
-
-    }
-
-
-    dots.forEach(function (dot, i) {
-
-        dot.classList.toggle(
-            "active",
-            i === index
-        );
-
     });
-
 }
 
+// ==========================================
+// 2. INLINE CHANGE PASSWORD ACCORDION WORKFLOW
+// ==========================================
+const togglePasswordBtn = document.getElementById("togglePasswordBtn");
+const passwordSection = document.getElementById("passwordSection");
+const cancelPasswordBtn = document.getElementById("cancelPasswordBtn");
+const changePasswordForm = document.getElementById("changePasswordForm");
+const pwdBtnText = document.getElementById("pwdBtnText");
 
-dots.forEach(function (dot, index) {
+function togglePasswordCard() {
+    if (passwordSection.style.display === "none" || passwordSection.style.display === "") {
+        passwordSection.style.display = "block";
+        pwdBtnText.innerText = "Close Password";
+        document.getElementById("currentPassword").focus();
+    } else {
+        passwordSection.style.display = "none";
+        pwdBtnText.innerText = "Change Password";
+        changePasswordForm.reset();
+    }
+}
 
-    dot.addEventListener(
-        "click",
-        function () {
+if (togglePasswordBtn) {
+    togglePasswordBtn.addEventListener("click", togglePasswordCard);
+}
 
-            changeSlide(index);
+if (cancelPasswordBtn) {
+    cancelPasswordBtn.addEventListener("click", () => {
+        passwordSection.style.display = "none";
+        pwdBtnText.innerText = "Change Password";
+        changePasswordForm.reset();
+    });
+}
 
+if (changePasswordForm) {
+    changePasswordForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const currentPassword = document.getElementById("currentPassword").value;
+        const newPassword = document.getElementById("newPassword").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+        const userId = document.getElementById("profileUserId").value;
+
+        if (newPassword.length < 6) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Weak Password',
+                text: 'New password must be at least 6 characters long.',
+                confirmButtonColor: '#47663B'
+            });
+            return;
         }
-    );
 
+        if (newPassword !== confirmPassword) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Password Mismatch',
+                text: 'New password and confirm password do not match.',
+                confirmButtonColor: '#47663B'
+            });
+            return;
+        }
+
+        const confirmChange = await Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you really want to update your password?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#47663B',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, change it!',
+            cancelButtonText: 'Cancel'
+        });
+
+        if (!confirmChange.isConfirmed) return;
+
+        try {
+            const res = await fetch('../api/user/change_password.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: userId,
+                    current_password: currentPassword,
+                    new_password: newPassword
+                })
+            });
+
+            const data = await res.json();
+
+            if (data.status === 'success') {
+    passwordSection.style.display = "none";
+    pwdBtnText.innerText = "Change Password";
+    changePasswordForm.reset();
+
+    Swal.fire({
+        icon: 'success',
+        title: 'Password Changed',
+        text: data.message,
+        showConfirmButton: false,
+        timer: 1800,
+        // timerProgressBar: true
+    });
+} else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message,
+                    confirmButtonColor: '#47663B'
+                });
+            }
+        } catch (err) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Server Error',
+                text: 'Failed to update password. Please try again later.',
+                confirmButtonColor: '#47663B'
+            });
+        }
+    });
+}
+    // ==========================================
+    // 6. CHAT / MESSAGING REALTIME SIMULATION
+    // ==========================================
+    const chatForm = document.getElementById("chatForm");
+    const chatInput = document.getElementById("chatInput");
+    const chatMessageList = document.getElementById("chatMessageList");
+
+    if (chatForm && chatInput && chatMessageList) {
+        chatForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            // Create Outgoing message bubble
+            const messageDiv = document.createElement("div");
+            messageDiv.className = "message outgoing";
+            messageDiv.innerHTML = `
+                <div class="message-bubble">
+                    <p>${text}</p>
+                    <span class="message-time">${timeNow}</span>
+                </div>
+            `;
+            chatMessageList.appendChild(messageDiv);
+            chatInput.value = "";
+            chatMessageList.scrollTop = chatMessageList.scrollHeight;
+
+            // Auto-reply hook (Ready for WebSocket or AJAX fetch)
+            setTimeout(() => {
+                const replyDiv = document.createElement("div");
+                replyDiv.className = "message incoming";
+                replyDiv.innerHTML = `
+                    <div class="message-bubble">
+                        <p>Thank you for reaching out! A representative will connect with you shortly.</p>
+                        <span class="message-time">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    </div>
+                `;
+                chatMessageList.appendChild(replyDiv);
+                chatMessageList.scrollTop = chatMessageList.scrollHeight;
+            }, 1000);
+        });
+    }
+
+    // ==========================================
+    // 7. HELP CENTER FAQ ACCORDION
+    // ==========================================
+    const faqQuestions = document.querySelectorAll(".faq-question");
+    faqQuestions.forEach(btn => {
+        btn.addEventListener("click", function () {
+            this.classList.toggle("active");
+            const answer = this.nextElementSibling;
+            if (answer.style.maxHeight) {
+                answer.style.maxHeight = null;
+            } else {
+                answer.style.maxHeight = answer.scrollHeight + "px";
+            }
+        });
+    });
 });
-
-
-/* AUTO SLIDER */
-
-setInterval(function () {
-
-    currentSlide++;
-
-    if (currentSlide >= heroImages.length) {
-
-        currentSlide = 0;
-
-    }
-
-    changeSlide(currentSlide);
-
-}, 5000);
-
-
-/* =========================================================
-   VIEW ALL CATEGORY
-========================================================= */
-
-const viewAllCategory =
-    document.querySelector(
-        ".view-all-category"
-    );
-
-
-if (viewAllCategory) {
-
-    viewAllCategory.addEventListener(
-        "click",
-        function () {
-
-            showSection("categories");
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   INITIAL PAGE
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-        showSection("dashboard");
-
-        updateCartCount();
-
-    }
-);
